@@ -1,6 +1,6 @@
-import { useGetChannel } from '@/hooks/use-channel';
-import { cn, getChannelStatus } from '@/lib/utils';
-import { ChannelStatus } from '@/types';
+import { useGetChannel } from "@/hooks/use-channel";
+import { cn, getChannelStatus } from "@/lib/utils";
+import { ChannelStatus } from "@/types";
 
 export const ChatLeftHeader = ({
   className,
@@ -23,8 +23,8 @@ export const ChatLeftHeader = ({
         })}
       />
       <div className="flex flex-col">
-        <span className="text-xs text-gray-500 cancel-drag cursor-text">
-          WO# {data?.wo}
+        <span className="text-xs text-gray-500 cancel-drag cursor-text truncate w-[180px]">
+          RO# {data?.ro}
         </span>
         <span className="text-sm font-medium text-black cancel-drag cursor-text">
           {name}

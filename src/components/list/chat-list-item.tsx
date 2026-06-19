@@ -1,10 +1,10 @@
 import React from "react";
 
 import Badge from "@sendbird/uikit-react/ui/Badge";
-import { cn, getFormattedChannel } from '@/lib/utils';
-import { type ChatListItemProps } from '@/types';
-import { NoSenderInfoItem } from '@/components/list/no-sender-info-item';
-import { SenderInfoItem } from '@/components/list/sender-info-item';
+import { cn, getFormattedChannel } from "@/lib/utils";
+import { type ChatListItemProps } from "@/types";
+import { NoSenderInfoItem } from "@/components/list/no-sender-info-item";
+import { SenderInfoItem } from "@/components/list/sender-info-item";
 
 export const ChatListItem: React.FC<ChatListItemProps> = ({
   channel,
@@ -20,14 +20,14 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({
     <div
       className={cn(
         "flex flex-col gap-2 p-4 hover:bg-gray-100 cursor-pointer border-b border-gray-200",
-        className
+        className,
       )}
     >
       <div className="relative flex gap-2 justify-between w-full">
         <h4 className="text-sm font-medium w-[60%] truncate text-black">
           {name}
         </h4>
-        <span className="text-xs text-gray-500">WO# {data?.wo}</span>
+        <span className="text-xs text-gray-500 truncate">RO# {data?.ro}</span>
         {channel?.unreadMessageCount ? (
           <Badge
             count={channel?.unreadMessageCount}
