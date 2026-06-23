@@ -12,9 +12,11 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({
 }) => {
   const { name, data } = getFormattedChannel(channel);
 
-  const sender = channel?.lastMessage?.isUserMessage()
-    ? channel?.lastMessage?.sender
-    : undefined;
+  const sender =
+    channel?.lastMessage?.isUserMessage() ||
+    channel?.lastMessage?.isFileMessage()
+      ? channel?.lastMessage?.sender
+      : undefined;
 
   return (
     <div

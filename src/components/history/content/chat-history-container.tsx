@@ -1,13 +1,13 @@
 import { useMemo } from "react";
 
-import { useChatScroll } from '@/hooks/use-chat-scroll';
-import { useHistoryMessages } from '@/hooks/use-history-message';
-import { formatDate } from '@/lib/date';
-import { wait } from '@/lib/utils';
-import type { ChatHistoryMessage, ChatHistoryParams } from '@/types';
-import { PendingSpinner } from '@/components/ui/pending-spinner';
-import { ChatHistoryGroupMessage } from '@/components/history/content/chat-history-group-message';
-import ChatHistoryHeader from '@/components/history/content/chat-history-header';
+import { useChatScroll } from "@/hooks/use-chat-scroll";
+import { useHistoryMessages } from "@/hooks/use-history-message";
+import { formatDate } from "@/lib/date";
+import { wait } from "@/lib/utils";
+import type { ChatHistoryMessage, ChatHistoryParams } from "@/types";
+import { PendingSpinner } from "@/components/ui/pending-spinner";
+import { ChatHistoryGroupMessage } from "@/components/history/content/chat-history-group-message";
+import ChatHistoryHeader from "@/components/history/content/chat-history-header";
 
 function groupMessagesByDay(messages: ChatHistoryMessage[]) {
   return messages.reduce<Record<string, ChatHistoryMessage[]>>(
@@ -19,7 +19,7 @@ function groupMessagesByDay(messages: ChatHistoryMessage[]) {
       acc[day].push(message);
       return acc;
     },
-    {}
+    {},
   );
 }
 
@@ -47,12 +47,12 @@ export function ChatHistoryContainer({
       if (hasNext) {
         setSize((size) => size + 1);
       }
-    }
+    },
   );
 
   const groupedMessages = useMemo(
     () => Object.entries(groupMessagesByDay(data)),
-    [data]
+    [data],
   );
 
   return (
@@ -60,7 +60,7 @@ export function ChatHistoryContainer({
       <ChatHistoryHeader
         wo={params.woID}
         vin={params.vin}
-        name={name || "2020 GMC C2500"}
+        name={name || "Chat History"}
         onXClick={handleClose}
       />
       <div ref={chatRef} className="h-[90%] p-4 overflow-y-auto">

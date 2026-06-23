@@ -2,13 +2,14 @@ import Message from "@sendbird/uikit-react/GroupChannel/components/Message";
 import MessageList from "@sendbird/uikit-react/GroupChannel/components/MessageList";
 import Button from "@sendbird/uikit-react/ui/Button";
 import MessageContent from "@sendbird/uikit-react/ui/MessageContent";
+import { MessageMenu } from "@sendbird/uikit-react/ui/MessageMenu";
 import { useCallback } from "react";
 
+import { PendingSpinner } from "@/components/ui/pending-spinner";
 import {
   useChannelMetadata,
   useImperativeGetChannel,
-} from '@/hooks/use-channel';
-import { PendingSpinner } from '@/components/ui/pending-spinner';
+} from "@/hooks/use-channel";
 
 export function GroupMessageList({
   existsChannel,
@@ -49,7 +50,26 @@ export function GroupMessageList({
         renderMessage={(props) => (
           <Message
             {...props}
-            renderMessageContent={(props) => <MessageContent {...props} />}
+            renderMessageContent={(props) => (
+              <MessageContent
+                {...props}
+                renderMessageMenu={(props) => (
+                  <MessageMenu
+                    {...props}
+                    renderMenuItems={({ items }) => {
+                      const { CopyMenuItem, ReplyMenuItem } = items;
+
+                      return (
+                        <>
+                          <CopyMenuItem />
+                          <ReplyMenuItem />
+                        </>
+                      );
+                    }}
+                  />
+                )}
+              />
+            )}
           />
         )}
       />

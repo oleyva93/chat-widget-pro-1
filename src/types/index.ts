@@ -109,11 +109,11 @@ export const ChannelStatus = {
 } as const;
 
 export const DEFAULT_CHAT_SIZE = {
-  width: 330,
-  height: 500,
+  width: 400,
+  height: 550,
   gap: 20,
-  minWidth: 300,
-  maxWidth: 800,
+  minWidth: 350,
+  maxWidth: 850,
   minHeight: 300,
   maxHeight: 800,
 } as const;

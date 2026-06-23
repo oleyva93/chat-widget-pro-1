@@ -1,6 +1,6 @@
 /* Import SendBird UI Kit styles */
 @import "@sendbird/uikit-react/dist/index.css";
-@import 'react-tooltip/dist/react-tooltip.css';
+@import "react-tooltip/dist/react-tooltip.css";
 
 @tailwind base;
 @tailwind components;
@@ -10,7 +10,9 @@
   @import "tailwindcss/utilities.css";
 
   @keyframes skBouncedelay {
-    0%, 80%, 100% {
+    0%,
+    80%,
+    100% {
       transform: scale(1);
       opacity: 0.4;
       background-color: var(--sendbird-light-primary-300);
@@ -55,9 +57,9 @@
 
 /* Custom widget styles */
 .chat-widget-container {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -73,7 +75,7 @@
 
 .sendbird-channel {
   height: 100%;
-} 
+}
 
 .sendbird-channel-list__header {
   height: unset !important;
@@ -119,11 +121,14 @@
   padding: 0px 0px 5px 0px !important;
 }
 
-.sendbird-message-content.outgoing .sendbird-message-content__left.use-reactions {
+.sendbird-message-content.outgoing
+  .sendbird-message-content__left.use-reactions {
   width: 120px !important;
 }
 
-.sendbird-message-input-wrapper--voice-message .sendbird-message-input-wrapper__message-input, .sendbird-message-input-wrapper .sendbird-message-input-wrapper__message-input {
+.sendbird-message-input-wrapper--voice-message
+  .sendbird-message-input-wrapper__message-input,
+.sendbird-message-input-wrapper .sendbird-message-input-wrapper__message-input {
   padding: 0px 0px !important;
 }
 
@@ -139,10 +144,18 @@
   z-index: 99999 !important;
 }
 
-.sendbird-theme--light .sendbird-icon-color--read [class*=fill] {
+.sendbird-theme--light .sendbird-icon-color--read [class*="fill"] {
   fill: var(--sendbird-light-primary-300) !important;
 }
 
 .sendbird__user-profile .sendbird__user-profile-message {
   display: none !important;
+}
+
+.sendbird-fileviewer__header__right__actions__delete {
+  display: none !important;
+}
+
+.sendbird-thumbnail-message-item-body {
+  min-width: 243px !important;
 }

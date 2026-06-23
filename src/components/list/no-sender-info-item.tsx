@@ -1,17 +1,16 @@
 import type { GroupChannel } from "@sendbird/chat/groupChannel";
 import { User } from "lucide-react";
 
-import { useGetChannelMetadata } from '@/hooks/use-channel';
-import { getChannelStatus } from '@/lib/utils';
-import { ChannelStatus } from '@/types';
-import { PendingSpinner } from '@/components/ui/pending-spinner';
+import { useGetChannelMetadata } from "@/hooks/use-channel";
+import { getChannelStatus } from "@/lib/utils";
+import { ChannelStatus } from "@/types";
+import { PendingSpinner } from "@/components/ui/pending-spinner";
 
 export function NoSenderInfoItem({ channel }: { channel: GroupChannel }) {
   const channelStatus = getChannelStatus(channel ?? null);
   const { data: channelMetadata } = useGetChannelMetadata(() =>
-    channel?.getMetaData([])
+    channel?.getMetaData([]),
   );
-
   const isPending = channelStatus === ChannelStatus.PENDING;
 
   const hasTechnician = Boolean(channelMetadata?.associatedTechnician);
@@ -21,7 +20,7 @@ export function NoSenderInfoItem({ channel }: { channel: GroupChannel }) {
       {isPending || !hasTechnician ? (
         <label className="w-full h-full flex flex-col  text-xs text-gray-500 px-1">
           <PendingSpinner className="justify-start" />
-          Waiting for the asTech technician to join.
+          Waiting for the asTech technician to joinssss.
         </label>
       ) : (
         <label className="w-full h-full flex flex-col  text-xs text-gray-500">

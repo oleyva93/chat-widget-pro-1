@@ -3,10 +3,10 @@ import TooltipWrapper from "@sendbird/uikit-react/ui/TooltipWrapper";
 import { Copy, X } from "lucide-react";
 import { memo, useMemo, useState } from "react";
 
-import { useImperativeChatHistory } from '@/hooks/use-history-message';
-import { formatToFullDate } from '@/lib/date';
-import type { ChatHistoryParams } from '@/types';
-import { Loader } from '@/components/ui/loader';
+import { useImperativeChatHistory } from "@/hooks/use-history-message";
+import { formatToFullDate } from "@/lib/date";
+import type { ChatHistoryParams } from "@/types";
+import { Loader } from "@/components/ui/loader";
 
 type ChatHistoryHeaderProps = {
   wo: string;
@@ -28,9 +28,6 @@ function ChatHistoryHeader({
       <div className={"flex items-center gap-3"}>
         <div className="w-3 h-3 rounded-full bg-green-500" />
         <div className="flex flex-col">
-          <span className="text-xs text-gray-500 cancel-drag cursor-text">
-            WO# {wo}
-          </span>
           <span className="text-sm font-medium text-black cancel-drag cursor-text">
             {name}
           </span>
@@ -65,7 +62,7 @@ function ChatHistoryHeaderCopy({ params }: { params: ChatHistoryParams }) {
         const { message: msg, user } = message;
 
         const createdAt = formatToFullDate(
-          message?.createdAt || message?.created_at
+          message?.createdAt || message?.created_at,
         );
 
         const userName =

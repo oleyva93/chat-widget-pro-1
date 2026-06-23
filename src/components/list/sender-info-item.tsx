@@ -1,13 +1,15 @@
 import type { GroupChannel } from "@sendbird/chat/groupChannel";
 import { User } from "lucide-react";
 
-import { messageDistance, truncateText } from '@/lib/utils';
-import ProfileImage from '@/components/ui/profile-image';
+import { messageDistance, truncateText } from "@/lib/utils";
+import ProfileImage from "@/components/ui/profile-image";
 
 export function SenderInfoItem({ channel }: { channel: GroupChannel }) {
-  const sender = channel?.lastMessage?.isUserMessage()
-    ? channel?.lastMessage?.sender
-    : undefined;
+  const sender =
+    channel?.lastMessage?.isUserMessage() ||
+    channel?.lastMessage?.isFileMessage()
+      ? channel?.lastMessage?.sender
+      : undefined;
 
   return (
     <div className="flex justify-between items-end">
@@ -21,7 +23,7 @@ export function SenderInfoItem({ channel }: { channel: GroupChannel }) {
         />
         <div className="flex flex-col">
           <h4 className="text-sm font-medium text-black">
-            {sender?.nickname || "SA"}&nbsp;&nbsp;
+            {sender?.nickname || "Admin"}&nbsp;&nbsp;
             <span className="text-xs text-gray-500">
               {messageDistance(channel?.lastMessage?.createdAt || 0)}
             </span>

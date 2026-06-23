@@ -65,7 +65,7 @@ export function truncateText(text: string, maxLength: number) {
 
 export function getMessageNickname(
   channel: GroupChannel | undefined,
-  currentUser: string
+  currentUser: string,
 ) {
   if (!channel) return "";
 
@@ -91,3 +91,31 @@ export function getMessageSender(channel: GroupChannel | undefined) {
 
 export const wait = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
+
+export const MAX_SIZE_MB = 24;
+export const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+
+export const ALLOWED_EXTENSIONS = ["jpeg", "jpg", "gif", "png", "bmp", "webp"];
+export const ALLOWED_MIME_TYPES = [
+  "image/jpeg",
+  "image/gif",
+  "image/png",
+  "image/bmp",
+  "image/webp",
+];
+
+export function isAllowedImage(file: File | null) {
+  if (!file) return false;
+
+  const extension = file?.name?.split(".")?.pop()?.toLowerCase();
+  return (
+    ALLOWED_EXTENSIONS.includes(extension ?? "") &&
+    ALLOWED_MIME_TYPES.includes(file?.type ?? "")
+  );
+}
+
+export function isAllowedFileSize(file: File | null) {
+  if (!file) return false;
+
+  return file?.size <= MAX_SIZE_BYTES;
+}

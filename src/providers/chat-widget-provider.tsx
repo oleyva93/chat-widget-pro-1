@@ -1,12 +1,12 @@
 import React, { useCallback, useMemo, useReducer } from "react";
 
-import { Handlers } from '@/components/utils/handlers';
-import { ChatWidgetContext } from '@/context/chat-widget-context';
-import { useConnection } from '@/hooks/use-connection';
-import { useHandleChannel } from '@/hooks/use-handle-channel';
-import type { ChatWidgetConfig, ChatWidgetProviderProps } from '@/types';
-import { RQProvider } from '@/providers/rq-provider';
-import { SBProvider } from '@/providers/sb-provider';
+import { Handlers } from "@/components/utils/handlers";
+import { ChatWidgetContext } from "@/context/chat-widget-context";
+import { useConnection } from "@/hooks/use-connection";
+import { useHandleChannel } from "@/hooks/use-handle-channel";
+import type { ChatWidgetConfig, ChatWidgetProviderProps } from "@/types";
+import { RQProvider } from "@/providers/rq-provider";
+import { SBProvider } from "@/providers/sb-provider";
 
 export const ChatWidgetProvider: React.FC<ChatWidgetProviderProps> = ({
   children,
@@ -23,7 +23,7 @@ export const ChatWidgetProvider: React.FC<ChatWidgetProviderProps> = ({
 
 const notificationReducer = (
   state: { withSound: boolean; withNotification: boolean },
-  action: "toggleSound" | "toggleNotification"
+  action: "toggleSound" | "toggleNotification",
 ) => {
   switch (action) {
     case "toggleSound":
@@ -58,7 +58,7 @@ function MainActions({
 
       console.log(message, type);
     },
-    [config]
+    [config],
   );
 
   const {
@@ -77,7 +77,7 @@ function MainActions({
 
   const channelsArray = useMemo(
     () => Array.from(channels.values()),
-    [channels]
+    [channels],
   );
 
   const handleToggleSound = useCallback(() => {
