@@ -1,7 +1,7 @@
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 
-import { useImperativeGetChannel } from '@/hooks/use-channel';
-import type { ChannelEntry, ChannelType } from '@/types';
+import { useImperativeGetChannel } from "@/hooks/use-channel";
+import type { ChannelEntry, ChannelType } from "@/types";
 
 type Options = {
   logger: (message: string, type: "error" | "warn" | "info" | "debug") => void;
@@ -19,12 +19,12 @@ export function useHandleChannel(options?: Options) {
   const optionsRef = useRef<Options>(options || defaultOptions);
 
   const [channels, setChannels] = useState<Map<string, ChannelEntry>>(
-    new Map()
+    new Map(),
   );
 
   const channelsArray = useMemo(
     () => Array.from(channels.values()),
-    [channels]
+    [channels],
   );
 
   const maximizedChannels = useMemo(() => {
@@ -93,11 +93,14 @@ export function useHandleChannel(options?: Options) {
           return;
         }
         handleSelection({ url } as { url: string });
-      } catch {
-        logger("Error opening chat or channel not found", "error");
+      } catch (error) {
+        logger(
+          `Error opening chat or channel not found: ${JSON.stringify(error)}`,
+          "error",
+        );
       }
     },
-    [handleSelection, getChannel]
+    [handleSelection, getChannel],
   );
 
   const handleJoinChannel = useCallback(
@@ -112,37 +115,47 @@ export function useHandleChannel(options?: Options) {
               {
                 associatedTechnician: technician,
               },
-              true
+              true,
             );
           }
           handleOpenChat(url);
         }
-      } catch {
-        logger("Error joining channel", "error");
+      } catch (error) {
+        logger(`Error joining channel: ${JSON.stringify(error)}`, "error");
       }
     },
-    [getChannel, handleOpenChat]
+    [getChannel, handleOpenChat],
   );
 
   const handleFreezeChannel = useCallback(
     async (url: string) => {
-      const channel = await getChannel(url);
-      if (channel) {
-        await channel.freeze();
-        handleCloseChat(url);
+      const logger = optionsRef.current?.logger;
+      try {
+        const channel = await getChannel(url);
+        if (channel) {
+          await channel.freeze();
+          handleCloseChat(url);
+        }
+      } catch (error) {
+        logger(`Error freezing channel: ${JSON.stringify(error)}`, "error");
       }
     },
-    [getChannel, handleCloseChat]
+    [getChannel, handleCloseChat],
   );
 
   const handleUnfreezeChannel = useCallback(
     async (url: string) => {
-      const channel = await getChannel(url);
-      if (channel) {
-        await channel.unfreeze();
+      const logger = optionsRef.current?.logger;
+      try {
+        const channel = await getChannel(url);
+        if (channel) {
+          await channel.unfreeze();
+        }
+      } catch (error) {
+        logger(`Error unfreezing channel: ${JSON.stringify(error)}`, "error");
       }
     },
-    [getChannel]
+    [getChannel],
   );
 
   useLayoutEffect(() => {

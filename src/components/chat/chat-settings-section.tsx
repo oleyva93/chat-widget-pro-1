@@ -6,9 +6,9 @@ import UserListItem from "@sendbird/uikit-react/ui/UserListItem";
 import UserProfile from "@sendbird/uikit-react/ui/UserProfile";
 import { ArrowLeft } from "lucide-react";
 
-import { useChannelMetadata, useGetChannel } from '@/hooks/use-channel';
-import { useChatWidget } from '@/hooks/use-chat-widget';
-import { ChatLeftHeader } from '@/components/chat/header/chat-left-header';
+import { useChannelMetadata, useGetChannel } from "@/hooks/use-channel";
+import { useChatWidget } from "@/hooks/use-chat-widget";
+import { ChatLeftHeader } from "@/components/chat/header/chat-left-header";
 
 export const ChatSettingsSection = ({
   channelUrl,
@@ -27,7 +27,7 @@ export const ChatSettingsSection = ({
 
   const currentUser = state.config.userId;
   const imOperator = channel?.members?.some(
-    (member) => member.role === Role.OPERATOR && member.userId === currentUser
+    (member) => member.role === Role.OPERATOR && member.userId === currentUser,
   );
   const imTechnicians = channelMetadata?.associatedTechnician === currentUser;
 

@@ -159,3 +159,7 @@
 .sendbird-thumbnail-message-item-body {
   min-width: 243px !important;
 }
+
+.sendbird-message-content .sendbird-message-content__middle {
+  max-width: 285px !important;
+}
