@@ -16,7 +16,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/oleyva93-pro/chat-widget-pro.git"
+    "url": "git+https://github.com/oleyva93/chat-widget-pro-1.git"
   },
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
