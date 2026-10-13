@@ -181,7 +181,7 @@ function ChatControls({ userId }: { userId: string }) {
               id="sound"
               name="sound"
               checked={state.withSound}
-              onChange={handleToggleSound}
+              onChange={(event) => handleToggleSound(event.target.checked)}
             />
           </div>
           <div className="flex items-center gap-2">
@@ -191,7 +191,9 @@ function ChatControls({ userId }: { userId: string }) {
               id="notification"
               name="notification"
               checked={state.withNotification}
-              onChange={handleToggleNotification}
+              onChange={(event) =>
+                handleToggleNotification(event.target.checked)
+              }
             />
           </div>
         </div>

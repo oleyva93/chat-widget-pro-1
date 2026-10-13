@@ -1,3 +1,5 @@
+import { useGroupChannel } from "@sendbird/uikit-react/GroupChannel/context";
+
 import { useGetChannel } from "@/hooks/use-channel";
 import { cn, getChannelStatus } from "@/lib/utils";
 import { ChannelStatus } from "@/types";
@@ -10,8 +12,14 @@ export const ChatLeftHeader = ({
   channelUrl: string;
 }) => {
   const { channel, name, data } = useGetChannel(channelUrl);
+  const {
+    state: { messages },
+  } = useGroupChannel();
 
-  const channelStatus = getChannelStatus(channel ?? null);
+  const channelStatus = getChannelStatus(
+    channel ?? null,
+    messages?.length ?? 0,
+  );
 
   return (
     <div className={cn("flex items-center gap-3", className)}>

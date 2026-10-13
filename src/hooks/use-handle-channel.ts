@@ -1,7 +1,12 @@
+import { ReportCategory } from "@sendbird/chat";
+import { MemberState } from "@sendbird/chat/groupChannel";
+import type { GroupChannel } from "@sendbird/chat/groupChannel";
+import { useSendbird } from "@sendbird/uikit-react";
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { useImperativeGetChannel } from "@/hooks/use-channel";
-import type { ChannelEntry, ChannelType } from "@/types";
+import { errorText } from "@/lib/log";
+import type { ChannelEntry, ChannelSelection } from "@/types";
 
 type Options = {
   logger: (message: string, type: "error" | "warn" | "info" | "debug") => void;
@@ -13,8 +18,19 @@ const defaultOptions: Options = {
   },
 };
 
+function isChannelMember(channel: GroupChannel, userId?: string) {
+  if (channel.myMemberState === MemberState.JOINED) return true;
+  if (!userId) return false;
+  return channel.members?.some((member) => member.userId === userId) ?? false;
+}
+
 export function useHandleChannel(options?: Options) {
   const getChannel = useImperativeGetChannel();
+  const {
+    state: { stores, config },
+  } = useSendbird();
+  const sdk = stores?.sdkStore?.sdk;
+  const userId = config?.userId;
 
   const optionsRef = useRef<Options>(options || defaultOptions);
 
@@ -35,24 +51,28 @@ export function useHandleChannel(options?: Options) {
     return channelsArray.filter((channel) => channel.minimized);
   }, [channelsArray]);
 
-  const handleSelection = useCallback((c: ChannelType | { url: string }) => {
-    if (!c) return;
+  const handleSelection = useCallback((c: ChannelSelection) => {
+    if (!c?.url) return;
 
     const { url } = c;
+    const readOnly = "readOnly" in c ? Boolean(c.readOnly) : false;
 
     setChannels((prev) => {
-      if (prev.get(url)) {
-        const channel = prev.get(url);
-        if (!channel?.minimized) {
-          return prev;
-        }
+      const existing = prev.get(url);
+      if (
+        existing &&
+        !existing.minimized &&
+        Boolean(existing.readOnly) === readOnly
+      ) {
+        return prev;
       }
 
       const channelsOpen = new Map(prev);
       channelsOpen.set(url, {
         url,
-        key: `${url}-${Date.now()}`,
+        key: existing?.key ?? `${url}-${Date.now()}`,
         minimized: false,
+        readOnly,
       });
 
       return channelsOpen;
@@ -86,76 +106,122 @@ export function useHandleChannel(options?: Options) {
   const handleOpenChat = useCallback(
     async (url: string) => {
       const logger = optionsRef.current?.logger;
+      if (!sdk?.currentUser) {
+        logger("User is not logged in to SendBird.", "error");
+        return;
+      }
       try {
         const channel = await getChannel(url);
         if (!channel) {
-          logger("Channel not found", "error");
+          logger(`Channel ${url} not found.`, "error");
           return;
         }
-        handleSelection({ url } as { url: string });
+        handleSelection({
+          url,
+          readOnly: !isChannelMember(channel, userId),
+        });
       } catch (error) {
         logger(
-          `Error opening chat or channel not found: ${JSON.stringify(error)}`,
+          `ERROR loading chats for user ${userId || "-"}. Exception=${errorText(error)}`,
           "error",
         );
       }
     },
-    [handleSelection, getChannel],
+    [handleSelection, getChannel, sdk, userId],
   );
 
   const handleJoinChannel = useCallback(
     async (url: string, technician?: string) => {
       const logger = optionsRef.current?.logger;
+      const logInfo = {
+        user_email: userId,
+        channel_url: url,
+        error: null as string | null,
+      };
+      if (!sdk?.currentUser) {
+        logger("User is not logged in to SendBird.", "error");
+        return;
+      }
       try {
         const channel = await getChannel(url);
-        if (channel) {
+        if (!channel) {
+          logger(`Channel ${url} not found.`, "error");
+          return;
+        }
+        if (!isChannelMember(channel, userId)) {
           await channel.join();
-          if (technician) {
+          logger(`_joinTheChannel ~ \n${JSON.stringify(logInfo)}`, "info");
+        }
+        if (technician) {
+          try {
             await channel.updateMetaData(
-              {
-                associatedTechnician: technician,
-              },
+              { associatedTechnician: technician },
               true,
             );
+          } catch (error) {
+            logger(
+              `Add metadata to channel ${url} failed. ERROR: ${errorText(error)}`,
+              "error",
+            );
           }
-          handleOpenChat(url);
         }
+        handleOpenChat(url);
       } catch (error) {
-        logger(`Error joining channel: ${JSON.stringify(error)}`, "error");
+        logger(
+          `_joinTheChannel ~ \n${JSON.stringify({ ...logInfo, error: errorText(error) })}`,
+          "error",
+        );
       }
     },
-    [getChannel, handleOpenChat],
+    [getChannel, handleOpenChat, sdk, userId],
   );
 
   const handleFreezeChannel = useCallback(
     async (url: string) => {
       const logger = optionsRef.current?.logger;
+      if (!sdk?.currentUser) {
+        logger("User is not logged in to SendBird.", "error");
+        return;
+      }
       try {
         const channel = await getChannel(url);
-        if (channel) {
-          await channel.freeze();
-          handleCloseChat(url);
+        if (!channel) {
+          logger(`Channel ${url} not found.`, "error");
+          return;
         }
+        await channel.freeze();
+        try {
+          await channel.report(ReportCategory.SPAM, "closed request");
+        } catch (error) {
+          logger(`freezeChannel ~ report ~ \n${errorText(error)}`, "error");
+        }
+        handleCloseChat(url);
       } catch (error) {
-        logger(`Error freezing channel: ${JSON.stringify(error)}`, "error");
+        logger(`freezeChannel ~ \n${errorText(error)}`, "error");
       }
     },
-    [getChannel, handleCloseChat],
+    [getChannel, handleCloseChat, sdk],
   );
 
   const handleUnfreezeChannel = useCallback(
     async (url: string) => {
       const logger = optionsRef.current?.logger;
+      if (!sdk?.currentUser) {
+        logger("User is not logged in to SendBird.", "error");
+        return;
+      }
       try {
         const channel = await getChannel(url);
-        if (channel) {
-          await channel.unfreeze();
+        if (!channel) {
+          logger(`Channel ${url} not found.`, "error");
+          return;
         }
+        await channel.unfreeze();
       } catch (error) {
-        logger(`Error unfreezing channel: ${JSON.stringify(error)}`, "error");
+        logger(`freezeChannel ~ \n${errorText(error)}`, "error");
       }
     },
-    [getChannel],
+    [getChannel, sdk],
   );
 
   useLayoutEffect(() => {

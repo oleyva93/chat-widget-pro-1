@@ -4,7 +4,13 @@ import { Copy, X } from "lucide-react";
 import { memo, useMemo, useState } from "react";
 
 import { useImperativeChatHistory } from "@/hooks/use-history-message";
+import { useTranslations } from "@/hooks/use-translations";
 import { formatToFullDate } from "@/lib/date";
+import {
+  getJoinLeaveEvent,
+  isSystemAdminMessage,
+  joinLeaveUserName,
+} from "@/lib/admin-message";
 import type { ChatHistoryParams } from "@/types";
 import { Loader } from "@/components/ui/loader";
 
@@ -21,6 +27,7 @@ function ChatHistoryHeader({
   vin,
   onXClick,
 }: ChatHistoryHeaderProps) {
+  const { t } = useTranslations();
   const params = useMemo(() => ({ woID: wo, vin, name }), [wo, vin, name]);
 
   return (
@@ -35,7 +42,7 @@ function ChatHistoryHeader({
       </div>
       <div className="flex justify-end relative cancel-drag">
         <ChatHistoryHeaderCopy params={params} />
-        <TooltipWrapper hoverTooltip={<Tooltip>Close chat</Tooltip>}>
+        <TooltipWrapper hoverTooltip={<Tooltip>{t("close_chat")}</Tooltip>}>
           <div
             className="rounded-full p-1 hover:bg-gray-100 cursor-pointer"
             onClick={onXClick}
@@ -51,6 +58,7 @@ function ChatHistoryHeader({
 
 function ChatHistoryHeaderCopy({ params }: { params: ChatHistoryParams }) {
   const [copied, setCopied] = useState(false);
+  const { t } = useTranslations();
 
   const { trigger, isMutating } = useImperativeChatHistory(params);
 
@@ -65,8 +73,19 @@ function ChatHistoryHeaderCopy({ params }: { params: ChatHistoryParams }) {
           message?.createdAt || message?.created_at,
         );
 
-        const userName =
-          user?.nickname || user?.user_id || "Automatic Event Message";
+        const joinLeave = getJoinLeaveEvent(message);
+        if (joinLeave?.users.length) {
+          return joinLeave.users
+            .map((member) => {
+              const line = `${joinLeaveUserName(member)} ${t(joinLeave.type)}`;
+              return `${line}\n${createdAt}\n\n-------------------------------- \n`;
+            })
+            .join("\n");
+        }
+
+        const userName = isSystemAdminMessage(message)
+          ? t("system_message_sender")
+          : user?.nickname || user?.user_id || t("automatic_event_message");
 
         return `${userName}\n${msg}\n${createdAt}\n\n-------------------------------- \n`;
       })
@@ -81,7 +100,7 @@ function ChatHistoryHeaderCopy({ params }: { params: ChatHistoryParams }) {
     <TooltipWrapper
       hoverTooltip={
         <Tooltip className="bg-zinc-500">
-          {copied ? "Copied!" : "Copy all messages"}
+          {copied ? t("all_messages_copied") : t("copy_messages_tooltip")}
         </Tooltip>
       }
     >

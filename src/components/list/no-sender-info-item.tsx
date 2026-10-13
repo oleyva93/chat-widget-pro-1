@@ -2,6 +2,7 @@ import type { GroupChannel } from "@sendbird/chat/groupChannel";
 import { User } from "lucide-react";
 
 import { useGetChannelMetadata } from "@/hooks/use-channel";
+import { useTranslations } from "@/hooks/use-translations";
 import { getChannelStatus } from "@/lib/utils";
 import { ChannelStatus } from "@/types";
 import { PendingSpinner } from "@/components/ui/pending-spinner";
@@ -12,19 +13,20 @@ export function NoSenderInfoItem({ channel }: { channel: GroupChannel }) {
     channel?.getMetaData([]),
   );
   const isPending = channelStatus === ChannelStatus.PENDING;
+  const { t } = useTranslations();
 
   const hasTechnician = Boolean(channelMetadata?.associatedTechnician);
 
   return (
     <div className="relative">
       {isPending || !hasTechnician ? (
-        <label className="w-full h-full flex flex-col  text-xs text-gray-500 px-1">
+        <label className="w-full h-full flex flex-col text-xs text-gray-500 px-1">
           <PendingSpinner className="justify-start" />
-          Waiting for the asTech technician to joinssss.
+          {t("waiting_assigned_technician")}
         </label>
       ) : (
         <label className="w-full h-full flex flex-col  text-xs text-gray-500">
-          No messages yet.
+          {t("no_messages_yet")}
         </label>
       )}
       <div className="flex gap-1 items-center absolute right-0 bottom-0">

@@ -5,6 +5,9 @@ import { cn, getFormattedChannel } from "@/lib/utils";
 import { type ChatListItemProps } from "@/types";
 import { NoSenderInfoItem } from "@/components/list/no-sender-info-item";
 import { SenderInfoItem } from "@/components/list/sender-info-item";
+import { AdminPreview } from "@/components/list/admin-preview";
+import { JoinLeavePreview } from "@/components/list/join-leave-preview";
+import { getJoinLeaveEvent } from "@/lib/admin-message";
 
 export const ChatListItem: React.FC<ChatListItemProps> = ({
   channel,
@@ -17,6 +20,10 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({
     channel?.lastMessage?.isFileMessage()
       ? channel?.lastMessage?.sender
       : undefined;
+
+  const joinLeave = channel.lastMessage?.isAdminMessage()
+    ? getJoinLeaveEvent(channel.lastMessage)
+    : null;
 
   return (
     <div
@@ -37,7 +44,11 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({
           />
         ) : null}
       </div>
-      {sender ? (
+      {joinLeave ? (
+        <JoinLeavePreview channel={channel} event={joinLeave} />
+      ) : channel.lastMessage?.isAdminMessage() ? (
+        <AdminPreview channel={channel} />
+      ) : sender ? (
         <SenderInfoItem channel={channel} />
       ) : (
         <NoSenderInfoItem channel={channel} />

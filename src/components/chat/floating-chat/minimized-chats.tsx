@@ -3,11 +3,13 @@ import { X } from "lucide-react";
 import React, { memo } from "react";
 import { Tooltip } from "react-tooltip";
 
-import { useChatWidget } from '@/hooks/use-chat-widget';
+import { useChatWidget } from "@/hooks/use-chat-widget";
+import { useTranslations } from "@/hooks/use-translations";
 import FloatingChat from '@/components/chat/floating-chat/floating-chat';
 
 export const MinimizedChats: React.FC = memo(() => {
   const { minimizedChannels, handleCloseAllChats } = useChatWidget();
+  const { t } = useTranslations();
 
   return (
     <div className="fixed bottom-10 right-6 flex flex-col gap-4 items-center">
@@ -25,7 +27,7 @@ export const MinimizedChats: React.FC = memo(() => {
             place="left"
             className="bg-white/90 shadow-chw rounded-2xl"
             variant="light"
-            content="Close all chats"
+            content={t("close_all_chats")}
           />
         </>
       ) : null}

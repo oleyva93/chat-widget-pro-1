@@ -9,14 +9,29 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function getChannelStatus(channel: GroupChannel | null) {
+function isChannelDeleted(channel: GroupChannel) {
+  return Boolean((channel as GroupChannel & { deleted?: boolean }).deleted);
+}
+
+/**
+ * Pending only while a one-member channel still has at most one loaded message.
+ * A later admin message (Tech Assist scan, etc.) makes the thread active so it stays visible.
+ * Omit `messageCount` in the channel list, where the loaded thread is not available.
+ */
+export function getChannelStatus(
+  channel: GroupChannel | null,
+  messageCount?: number,
+) {
   if (!channel) return ChannelStatus.PENDING;
 
-  if (channel.isFrozen) {
+  if (channel.isFrozen || isChannelDeleted(channel)) {
     return ChannelStatus.COMPLETED;
   }
 
-  if (channel.memberCount < 2) {
+  const stillWaiting =
+    messageCount === undefined || messageCount <= 1;
+
+  if (channel.memberCount < 2 && stillWaiting) {
     return ChannelStatus.PENDING;
   }
 

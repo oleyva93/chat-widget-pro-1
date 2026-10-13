@@ -16,6 +16,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = memo(() => {
           key={entry.key}
           index={index + 0.3}
           channelUrl={entry.url}
+          readOnly={entry.readOnly}
           onCloseChat={() => handleCloseChat(entry.url)}
           onMinimizeChat={() => handleMinimizeChat(entry.url)}
         />

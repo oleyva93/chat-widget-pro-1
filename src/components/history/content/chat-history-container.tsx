@@ -1,8 +1,10 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import { useChatScroll } from "@/hooks/use-chat-scroll";
+import { useChatWidget } from "@/hooks/use-chat-widget";
 import { useHistoryMessages } from "@/hooks/use-history-message";
 import { formatDate } from "@/lib/date";
+import { errorText } from "@/lib/log";
 import { wait } from "@/lib/utils";
 import type { ChatHistoryMessage, ChatHistoryParams } from "@/types";
 import { PendingSpinner } from "@/components/ui/pending-spinner";
@@ -30,7 +32,8 @@ export function ChatHistoryContainer({
   params: ChatHistoryParams;
   handleClose: () => void;
 }) {
-  const { data, isLoading, hasNext, setSize, size, isValidating } =
+  const { logger } = useChatWidget();
+  const { data, isLoading, hasNext, setSize, size, isValidating, error } =
     useHistoryMessages(params, {
       onSuccess: async () => {
         if (chatRef.current && size > 1 && !isLoading) {
@@ -40,6 +43,20 @@ export function ChatHistoryContainer({
         }
       },
     });
+
+  const reportedHistoryError = useRef("");
+
+  useEffect(() => {
+    if (!error) return;
+    const exception = errorText(error);
+    const key = `${params.woID}:${params.vin}:${exception}`;
+    if (reportedHistoryError.current === key) return;
+    reportedHistoryError.current = key;
+    logger(
+      `ERROR getting chat history for woID=${params.woID} vin=${params.vin}. Exception=${exception}`,
+      "error",
+    );
+  }, [error, logger, params.woID, params.vin]);
 
   const { ref: chatRef, previousHeight } = useChatScroll(
     Boolean(data.length),

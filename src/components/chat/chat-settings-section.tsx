@@ -20,7 +20,7 @@ export const ChatSettingsSection = ({
   existsChannel: boolean;
 }) => {
   const { state } = useSendbird();
-  const { handleCloseChat } = useChatWidget();
+  const { handleCloseChat, logger } = useChatWidget();
 
   const { channel } = useGetChannel(channelUrl);
   const { data: channelMetadata } = useChannelMetadata();
@@ -39,6 +39,14 @@ export const ChatSettingsSection = ({
         channelUrl={channelUrl}
         className="rounded-xl"
         onLeaveChannel={() => {
+          logger(
+            `_leaveTheChannel ~ \n${JSON.stringify({
+              user_email: currentUser,
+              channel_url: channelUrl,
+              error: null,
+            })}`,
+            "info",
+          );
           handleCloseChat(channelUrl);
         }}
         renderChannelProfile={() => (

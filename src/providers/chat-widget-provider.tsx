@@ -4,6 +4,8 @@ import { Handlers } from "@/components/utils/handlers";
 import { ChatWidgetContext } from "@/context/chat-widget-context";
 import { useConnection } from "@/hooks/use-connection";
 import { useHandleChannel } from "@/hooks/use-handle-channel";
+import { emitLog, type LogType } from "@/lib/log";
+import { normalizeLanguage } from "@/lib/translations";
 import type { ChatWidgetConfig, ChatWidgetProviderProps } from "@/types";
 import { RQProvider } from "@/providers/rq-provider";
 import { SBProvider } from "@/providers/sb-provider";
@@ -21,18 +23,26 @@ export const ChatWidgetProvider: React.FC<ChatWidgetProviderProps> = ({
   );
 };
 
+type NotificationAction =
+  | { type: "toggleSound" }
+  | { type: "toggleNotification" }
+  | { type: "setSound"; value: boolean }
+  | { type: "setNotification"; value: boolean };
+
 const notificationReducer = (
   state: { withSound: boolean; withNotification: boolean },
-  action: "toggleSound" | "toggleNotification",
+  action: NotificationAction,
 ) => {
-  switch (action) {
+  switch (action.type) {
     case "toggleSound":
       return { ...state, withSound: !state.withSound };
     case "toggleNotification":
       return { ...state, withNotification: !state.withNotification };
+    case "setSound":
+      return { ...state, withSound: action.value };
+    case "setNotification":
+      return { ...state, withNotification: action.value };
   }
-
-  return state;
 };
 
 function MainActions({
@@ -50,13 +60,8 @@ function MainActions({
   const { handleDisconnect, handleConnect } = useConnection(config);
 
   const logger = useCallback(
-    (message: string, type: "error" | "warn" | "info" | "debug") => {
-      if (config?.logger) {
-        config.logger(message, type);
-        return;
-      }
-
-      console.log(message, type);
+    (message: string, type: LogType) => {
+      emitLog(config?.logger, message, type);
     },
     [config],
   );
@@ -80,12 +85,22 @@ function MainActions({
     [channels],
   );
 
-  const handleToggleSound = useCallback(() => {
-    dispatch("toggleSound");
+  const language = normalizeLanguage(config.language);
+
+  const handleToggleSound = useCallback((value?: boolean) => {
+    if (typeof value === "boolean") {
+      dispatch({ type: "setSound", value });
+      return;
+    }
+    dispatch({ type: "toggleSound" });
   }, []);
 
-  const handleToggleNotification = useCallback(() => {
-    dispatch("toggleNotification");
+  const handleToggleNotification = useCallback((value?: boolean) => {
+    if (typeof value === "boolean") {
+      dispatch({ type: "setNotification", value });
+      return;
+    }
+    dispatch({ type: "toggleNotification" });
   }, []);
 
   return (
@@ -100,6 +115,7 @@ function MainActions({
         handleCloseAllChats,
         handleOpenChat,
         state,
+        language,
         handleToggleSound,
         handleToggleNotification,
         logger,

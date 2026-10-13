@@ -11,11 +11,15 @@ export interface SendBirdConfig {
 export interface ChatWidgetProps {
   key?: string;
 }
+export type ChatLanguage = "en" | "es" | "fr";
+
 export interface ChatWidgetConfig extends SendBirdConfig {
   withSound?: boolean;
   withNotification?: boolean;
   nickname?: string;
   profileUrl?: string;
+  /** User language (`en`, `es`, `fr`, or a locale such as `es-MX`). */
+  language?: string;
   logger?: (message: string, type: "error" | "warn" | "info" | "debug") => void;
 }
 
@@ -60,19 +64,24 @@ export interface ChatWindowProps {
   onCloseChat?: () => void;
   onMinimizeChat?: () => void;
   minimized?: boolean;
+  /** Opens the thread without joining and without a composer. */
+  readOnly?: boolean;
 }
 
 export interface ChannelEntry {
   url: string;
   minimized?: boolean;
   key: string;
+  readOnly?: boolean;
 }
+
+export type ChannelSelection = ChannelType | { url: string; readOnly?: boolean };
 
 export interface ChatWidgetContextType {
   channels: ChannelEntry[];
   maximizedChannels: ChannelEntry[];
   minimizedChannels: ChannelEntry[];
-  handleSelection: (channel: ChannelType) => void;
+  handleSelection: (channel: ChannelSelection) => void;
   handleCloseChat: (url: string) => void;
   handleMinimizeChat: (url: string) => void;
   handleCloseAllChats: () => void;
@@ -81,8 +90,11 @@ export interface ChatWidgetContextType {
     withSound: boolean;
     withNotification: boolean;
   };
-  handleToggleSound: () => void;
-  handleToggleNotification: () => void;
+  language: ChatLanguage;
+  /** Sets the value when a boolean is passed. With no argument, flips the current value. */
+  handleToggleSound: (value?: boolean) => void;
+  /** Sets the value when a boolean is passed. With no argument, flips the current value. */
+  handleToggleNotification: (value?: boolean) => void;
   logger: (message: string, type: "error" | "warn" | "info" | "debug") => void;
   handleJoinChannel: (url: string, technician?: string) => void;
   handleFreezeChannel: (url: string) => void;
@@ -121,6 +133,8 @@ export const DEFAULT_CHAT_SIZE = {
 export interface ProfileImageProps {
   profileUrl: string;
   nickname: string;
+  /** Shown instead of initials derived from the nickname. */
+  initials?: string;
   height?: number;
   width?: number;
   fontSize?: number;

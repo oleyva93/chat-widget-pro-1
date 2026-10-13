@@ -7,6 +7,7 @@ import type { ProfileImageProps } from '@/types';
 export default function ProfileImage({
   profileUrl,
   nickname,
+  initials,
   height = 48,
   width = 48,
   fontSize = 16,
@@ -29,7 +30,7 @@ export default function ProfileImage({
             fontSize,
           }}
         >
-          {getInitialFromFullName(nickname)}
+          {initials ?? getInitialFromFullName(nickname)}
         </div>
       ) : (
         <img

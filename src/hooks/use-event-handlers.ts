@@ -4,12 +4,19 @@ import ConnectionHandler from "@sendbird/uikit-react/handlers/ConnectionHandler"
 import { useEffect, useId, useLayoutEffect, useRef } from "react";
 
 import type { BaseChannel } from "@sendbird/chat";
+import type { GroupChannel } from "@sendbird/chat/groupChannel";
 import type { BaseMessage } from "@sendbird/chat/message";
+
+type JoinedUser = {
+  userId?: string;
+  role?: string;
+};
 
 type EventHandlers = {
   onMessageReceived?: (channel: BaseChannel, message: BaseMessage) => void;
   onConnected?: () => void;
   onChannelChanged?: (channel: BaseChannel) => void;
+  onUserJoined?: (channel: GroupChannel, user: JoinedUser) => void;
   onError?: (error: Error) => void;
 };
 
@@ -38,6 +45,9 @@ export function useEventHandlers(handlers: EventHandlers): void {
         onChannelChanged: (channel) => {
           handlersRef.current.onChannelChanged?.(channel);
         },
+        onUserJoined: (channel, user) => {
+          handlersRef.current.onUserJoined?.(channel, user);
+        },
       });
 
       const connectionHandler = new ConnectionHandler({
@@ -62,8 +72,10 @@ export function useEventHandlers(handlers: EventHandlers): void {
 
     return () => {
       try {
-        sdk?.removeConnectionHandler?.("connection-handler");
-        sdk?.groupChannel?.removeGroupChannelHandler?.("group-channel-handler");
+        sdk?.removeConnectionHandler?.(`connection-handler-${id}`);
+        sdk?.groupChannel?.removeGroupChannelHandler?.(
+          `group-channel-handler-${id}`,
+        );
       } catch {
         handlersRef.current.onError?.(
           new Error("Failed to remove the connectionHandler")

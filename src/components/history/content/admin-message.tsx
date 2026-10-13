@@ -1,14 +1,22 @@
 import { memo } from "react";
-import type { ChatHistoryMessage } from '@/types';
+
+import { JoinLeaveNotice } from "@/components/chat/join-leave-notice";
+import { SystemMessageRow } from "@/components/chat/system-message";
+import { getJoinLeaveEvent } from "@/lib/admin-message";
+import type { ChatHistoryMessage } from "@/types";
 
 export const AdminMessage = memo(
   ({ message }: { message: ChatHistoryMessage }) => {
+    const joinLeave = getJoinLeaveEvent(message);
+    if (joinLeave) {
+      return <JoinLeaveNotice event={joinLeave} />;
+    }
+
     return (
-      <div className="flex items-center justify-center gap-2 w-full">
-        <label className="text-xs text-gray-500 font-bold">
-          {message.message}
-        </label>
-      </div>
+      <SystemMessageRow
+        text={message.message}
+        createdAt={message.created_at || message.createdAt}
+      />
     );
-  }
+  },
 );

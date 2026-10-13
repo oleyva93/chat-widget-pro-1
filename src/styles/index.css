@@ -7,8 +7,6 @@
 @tailwind utilities;
 
 @layer utilities {
-  @import "tailwindcss/utilities.css";
-
   @keyframes skBouncedelay {
     0%,
     80%,
